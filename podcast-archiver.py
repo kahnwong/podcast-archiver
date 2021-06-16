@@ -32,7 +32,10 @@ def main(
         output_file = os.path.join(FOLDER_NAME, episode['filename'])
 
         print(f'Downloading {output_file}')
-        download(episode['url'], output_file)
+        if os.path.exists(output_file):
+            print('\n Skip download')
+        else:
+            download(episode['url'], output_file)
 
 if __name__ == "__main__":
     typer.run(main)

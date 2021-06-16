@@ -1,5 +1,8 @@
 # podcast-archiver
 
+## Notes
+It skips an episode if already downloaded.
+
 ```
 Usage: podcast-archiver.py [OPTIONS] FEED
 
