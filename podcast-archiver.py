@@ -1,13 +1,16 @@
-import typer
-from utils.utils import *
 import os
+
+import typer
+
+from utils.utils import download
+from utils.utils import get_episodes
 
 
 def main(
     feed: str,
     start_index: int = typer.Option(1, help="First episode to download."),
     end_index: int = typer.Option(10, help="Last episode to download."),
-    last_n_eps: int = typer.Option(None, help="Download last n episodes.")
+    last_n_eps: int = typer.Option(None, help="Download last n episodes."),
 ):
     """
     Specify FEED url to download the first 10 episodes by default.
@@ -22,20 +25,21 @@ def main(
         episodes = episodes[-last_n_eps:]
     elif start_index:
         start_index -= 1
-        episodes = episodes[start_index: end_index]
+        episodes = episodes[start_index:end_index]
 
     ######################## download ########################
-    FOLDER_NAME = os.path.join('podcasts',  FOLDER_NAME)
+    FOLDER_NAME = os.path.join("podcasts", FOLDER_NAME)
     os.makedirs(FOLDER_NAME, exist_ok=True)
 
     for episode in episodes:
-        output_file = os.path.join(FOLDER_NAME, episode['filename'])
+        output_file = os.path.join(FOLDER_NAME, episode["filename"])
 
-        print(f'Downloading {output_file}')
+        print(f"Downloading {output_file}")
         if os.path.exists(output_file):
-            print('\n Skip download')
+            print("\n Skip download")
         else:
-            download(episode['url'], output_file)
+            download(episode["url"], output_file)
+
 
 if __name__ == "__main__":
     typer.run(main)

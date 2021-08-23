@@ -1,35 +1,37 @@
 import feedparser
-from dateutil.parser import parse
-# import threading
 import requests
+from dateutil.parser import parse
 from tqdm import tqdm
+
+# import threading
+
 
 def get_episodes(feed):  # sourcery skip: merge-dict-assign
     d = feedparser.parse(feed)
 
-    TITLE = d['feed']['title']
-    AUTHOR = d['feed']['author'].replace('/', '-')
-    FOLDER_NAME = f'{AUTHOR} - {TITLE}'
+    TITLE = d["feed"]["title"]
+    AUTHOR = d["feed"]["author"].replace("/", "-")
+    FOLDER_NAME = f"{AUTHOR} - {TITLE}"
 
     episodes = []
-    for i in d['entries']:
+    for i in d["entries"]:
         e = {}
-        e['title'] = i['title']
-        e['timestamp'] = str(parse(i['published']).date()).replace('-', '')
-        
+        e["title"] = i["title"]
+        e["timestamp"] = str(parse(i["published"]).date()).replace("-", "")
+
         ### extract link
-        for link in i['links']:
-            if link['type'] == 'audio/mpeg':
-                e['url'] = link['href']
+        for link in i["links"]:
+            if link["type"] == "audio/mpeg":
+                e["url"] = link["href"]
 
         ### create download path
-        file_extension = e['url'].split('?')[0].split('.')[-1]
-        filename = e['title'].replace(':', '-')
+        file_extension = e["url"].split("?")[0].split(".")[-1]
+        filename = e["title"].replace(":", "-")
 
-        e['filename'] = e['timestamp'] + '-' + filename + '.' + file_extension
-        
+        e["filename"] = e["timestamp"] + "-" + filename + "." + file_extension
+
         episodes.append(e)
-        
+
     ### sort chronologically
     episodes = episodes[::-1]
 
@@ -52,12 +54,12 @@ def get_episodes(feed):  # sourcery skip: merge-dict-assign
 # https://gist.github.com/yanqd0/c13ed29e29432e3cf3e7c38467f42f51
 def download(url, filelocation):
     resp = requests.get(url, stream=True)
-    total = int(resp.headers.get('content-length', 0))
-    with open(filelocation, 'wb') as file, tqdm(
-            total=total,
-            unit='iB',
-            unit_scale=True,
-            unit_divisor=1024,
+    total = int(resp.headers.get("content-length", 0))
+    with open(filelocation, "wb") as file, tqdm(
+        total=total,
+        unit="iB",
+        unit_scale=True,
+        unit_divisor=1024,
     ) as bar:
         for data in resp.iter_content(chunk_size=1024):
             size = file.write(data)
